@@ -93,10 +93,11 @@ uint3 __device_builtin__ __STORAGE__ blockIdx;
     return block_index;
     __ESBMC_atomic_end();
   }
-
-  dim3 cudaGet_blockDim();
-  dim3 cudaGet_gridDim();
-
+  extern "C++"
+  {
+    dim3 cudaGet_blockDim();
+    dim3 cudaGet_gridDim();
+  }
   /*
 #define blockDim cudaGet_blockDim()
 #define gridDim cudaGet_gridDim();

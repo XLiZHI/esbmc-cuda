@@ -482,7 +482,7 @@ cudaError_t cudaMemcpy(T1 dst, T2 src, size_t count, enum cudaMemcpyKind kind)
   return __cudaMemcpy(dst, src, count, kind);
 }
 
-char *cudaGetErrorString(cudaError_t error)
+const char *cudaGetErrorString(cudaError_t error)
 {
   char *erroReturn;
 

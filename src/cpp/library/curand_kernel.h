@@ -270,7 +270,7 @@ __curand_matcopy(unsigned int *matrix, unsigned int *matrixA, int n)
 /* Convert unsigned int to float, use no intrinsics */
 /*QUALIFIERS*/ float __curand_uint32AsFloat(unsigned int i)
 {
-  union
+  union _xx
   {
     float f;
     unsigned int i;
@@ -283,7 +283,7 @@ __curand_matcopy(unsigned int *matrix, unsigned int *matrixA, int n)
 /*QUALIFIERS*/ double
 __curand_hilouint32AsDouble(unsigned int hi, unsigned int lo)
 {
-  union
+  union xx_
   {
     double f;
     unsigned int hi;

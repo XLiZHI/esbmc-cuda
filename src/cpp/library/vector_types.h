@@ -387,7 +387,7 @@ __cuda_builtin_vector_align8(float2, float x; float y;);
       y = v.y;
       z = v.z;
     }
-    __host__ __device__ __dim3(__dim3 d)
+    __host__ __device__ __dim3(const __dim3 &d)
     {
       x = d.x;
       y = d.y;

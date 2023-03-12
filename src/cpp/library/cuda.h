@@ -101,8 +101,8 @@ void __threadfence()
 {
 }
 
-void *address[10];
-int counter = 0;
+void *Address[10];
+int Counter = 0;
 
 cudaError_t cudaMalloc(void **devPtr, size_t size)
 {
@@ -111,8 +111,8 @@ cudaError_t cudaMalloc(void **devPtr, size_t size)
   __ESBMC_assert(size > 0, "Size to be allocated may not be less than zero");
   *devPtr = malloc(size);
 
-  address[counter] = *devPtr;
-  counter++;
+  Address[Counter] = *devPtr;
+  Counter++;
 
   if(*devPtr == NULL)
   {
@@ -228,7 +228,7 @@ void verify_kernel_with_three_args(RET *kernel, BLOCK blocks, THREAD threads, T1
 
 #endif
 
-threadsList_t *cudaThreadList = NULL;
+//threadsList_t *cudaThreadList = NULL;
 
 cudaError_t cudaFree(void *devPtr)
 {

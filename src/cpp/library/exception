@@ -40,12 +40,14 @@ unexpected_handler unexpected_pf=default_unexpected;
 
 terminate_handler set_terminate(terminate_handler f) throw ()
 {
-  terminate_pf=f;
+    terminate_pf = f;
+    return terminate_pf;
 }
 
 unexpected_handler set_unexpected(unexpected_handler f) throw ()
 {
-  unexpected_pf=f;
+    unexpected_pf=f;
+    return unexpected_pf;
 }
 
 // Model for unexpected function: calls the current
@@ -87,11 +89,11 @@ public:
  **/
 class bad_exception: public exception {
 public:
-  bad_exception() {}
+  bad_exception() throw() {}
 
-  virtual ~bad_exception() {}
+  virtual ~bad_exception() throw() {}
 
-  virtual const char* what() const {
+  virtual const char* what() const throw() {
     return (const char*) message;
   }
 };
