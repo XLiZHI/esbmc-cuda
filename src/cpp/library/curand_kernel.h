@@ -283,7 +283,7 @@ __curand_matcopy(unsigned int *matrix, unsigned int *matrixA, int n)
 /*QUALIFIERS*/ double
 __curand_hilouint32AsDouble(unsigned int hi, unsigned int lo)
 {
-  union xx_
+  union _xx
   {
     double f;
     unsigned int hi;
