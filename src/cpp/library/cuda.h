@@ -6,8 +6,8 @@
 #include <curand.h>
 #include <cuda_runtime_api.h>
 #include <call_kernel.h>
-
 #include <stddef.h>
+
 #include <cstdlib>
 #include <string.h>
 #include <pthread.h>

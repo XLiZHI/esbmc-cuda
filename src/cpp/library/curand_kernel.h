@@ -555,7 +555,8 @@ skipahead_sequence(unsigned long long n, curandStateXORWOW_t *state)
   // Break up seed, apply salt
   // Constants are arbitrary nonzero values
   unsigned int s0 = ((unsigned int)seed) ^ 0xaad26b49UL;
-  unsigned int s1 = (unsigned int)(seed >> 32) ^ 0xf7dcefddUL;
+  unsigned int s1;
+  s1 = (unsigned int)(seed >> 32) ^ 0xf7dcefddUL;
   // Simple multiplication to mix up bits
   // Constants are arbitrary odd values
   unsigned int t0 = 1099087573UL * s0;
@@ -948,7 +949,8 @@ template <typename PT>
 
 /*QUALIFIERS*/ double _curand_uniform_double_64(unsigned long long x)
 {
-  unsigned long long z = (unsigned long long)x >> (64 - 53);
+  unsigned long long z;
+  z = (unsigned long long)x >> (64 - 53);
   return z * CURAND_2POW53_INV_DOUBLE + (CURAND_2POW53_INV_DOUBLE / 2.0);
 }
 
