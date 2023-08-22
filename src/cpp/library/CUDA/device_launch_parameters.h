@@ -43,10 +43,10 @@ extern "C"
 
     //for(i = 0; i < GPU_threads; i++)
     for(i = 0; i < 2; i++)
-      indexOfBlock[i] = getBlockIdx(i);
+      indexOfBlock[i] = getBlockIdx_table(i);
     //for(i = 0; i < GPU_threads; i++)
     for(i = 0; i < 2; i++)
-      indexOfThread[i] = getThreadIdx(i);
+      indexOfThread[i] = getThreadIdx_table(i);
 
     __ESBMC_atomic_end();
   }
