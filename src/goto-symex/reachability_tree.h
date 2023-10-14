@@ -239,6 +239,9 @@ public:
    *  re-reached through symbolic execution. Not going to document it until I
    *  know that it works.
    */
+
+  void step_options();
+
   class dfs_position
   {
   public:

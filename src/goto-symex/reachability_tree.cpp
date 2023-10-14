@@ -8,6 +8,7 @@
 #endif
 
 #include <goto-symex/goto_symex.h>
+#include <goto-symex/add_race_assertions.h>
 #include <goto-symex/reachability_tree.h>
 #include <util/config.h>
 #include <util/crypto_hash.h>
@@ -521,10 +522,17 @@ bool reachability_treet::check_thread_viable(unsigned int tid, bool quiet) const
   return true;
 }
 
+void reachability_treet::step_options()
+{
+  // add_race_assertions(permanent_context, goto_functions);
+}
+
 std::shared_ptr<goto_symext::symex_resultt>
 reachability_treet::get_next_formula()
 {
   assert(execution_states.size() > 0 && "Must setup RT before exploring");
+
+  step_options();
 
   while(!is_has_complete_formula())
   {
@@ -575,16 +583,17 @@ bool reachability_treet::setup_next_formula()
 std::shared_ptr<goto_symext::symex_resultt>
 reachability_treet::generate_schedule_formula()
 {
+  step_options();
+
   int total_states = 0;
   while(has_more_states())
   {
     total_states++;
+
     while((!get_cur_state().has_cswitch_point_occured() ||
            get_cur_state().check_if_ileaves_blocked()) &&
           get_cur_state().can_execution_continue())
-    {
       get_cur_state().symex_step(*this);
-    }
 
     if(state_hashing)
     {
