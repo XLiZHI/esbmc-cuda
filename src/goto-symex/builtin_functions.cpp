@@ -1506,3 +1506,65 @@ void goto_symext::intrinsic_get_object_size(
     false,
     cur_state->guard);
 }
+
+void goto_symext::intrinsic_races_check_dereference(expr2tc &expr, bool assign)
+{
+  if(!options.get_bool_option("data-races-check"))
+    return;
+
+  exprt tmp_exprt = migrate_expr_back(expr);
+  std::string id;
+  if(assign)
+    id = tmp_exprt.identifier().as_string();
+  else
+  {
+    tmp_exprt = tmp_exprt.op0();
+    id = tmp_exprt.identifier().as_string();
+  }
+
+  if(has_prefix(id, "_ESBMC_deref"))
+  {
+    const irep_idt identifier = id.substr(13);
+
+    const symbolt *symbol = new_context.find_symbol(identifier);
+
+    if(!symbol)
+      return;
+
+    exprt deref("dereference");
+    deref.type() = symbol_expr(*symbol).type().subtype();
+    deref.copy_to_operands(symbol_expr(*symbol));
+
+    expr2tc tmp_deref;
+    migrate_expr(deref, tmp_deref);
+    dereference(tmp_deref, dereferencet::READ);
+    deref = migrate_expr_back(tmp_deref);
+
+    if(has_prefix(id2string(deref.identifier()), "symex::invalid_object"))
+      return;
+
+    const irep_idt new_idt = "tmp_" + id2string(deref.identifier());
+
+    symbolt *s = new_context.find_symbol(new_idt);
+
+    symbolt new_symbol;
+
+    if(s)
+      new_symbol = *s;
+    else
+    {
+      new_symbol.id = new_idt;
+      new_symbol.name = new_idt;
+      new_symbol.type = typet("bool");
+      new_symbol.static_lifetime = true;
+      new_symbol.value.make_false();
+
+      new_context.add(new_symbol);
+    }
+
+    if(assign)
+      migrate_expr(symbol_expr(new_symbol), expr);
+    else
+      migrate_expr(gen_not(symbol_expr(new_symbol)), expr);
+  }
+}

@@ -27,7 +27,8 @@ void rw_sett::read_write_rec(
   bool r,
   bool w,
   const std::string &suffix,
-  const guardt &guard)
+  const guardt &guard,
+  bool dereferenced)
 {
   if(expr.id() == "symbol" && !expr.has_operands())
   {
@@ -36,9 +37,7 @@ void rw_sett::read_write_rec(
     const symbolt *symbol = ns.lookup(symbol_expr.get_identifier());
     if(symbol)
     {
-      if(
-        !symbol->static_lifetime &&
-        expr.type().subtype().id() != "dereferenced_symbol")
+      if(!symbol->static_lifetime && !dereferenced)
       {
         return; // ignore for now
       }
@@ -65,6 +64,7 @@ void rw_sett::read_write_rec(
     entry.object = object;
     entry.r = entry.r || r;
     entry.w = entry.w || w;
+    entry.dereferenced = dereferenced;
     entry.guard = migrate_expr_back(guard.as_expr());
   }
   else if(expr.id() == "member")
@@ -90,17 +90,14 @@ void rw_sett::read_write_rec(
     assert(expr.operands().size() == 1);
     read(expr.op0(), guard);
 
+    exprt tmp(expr.op0());
     expr2tc tmp_expr;
-    migrate_expr(expr, tmp_expr);
-    dereference(target, tmp_expr, ns, value_sets);
-    exprt tmp = migrate_expr_back(tmp_expr);
+    migrate_expr(tmp, tmp_expr);
+    // dereference(target, tmp_expr, ns, value_sets);
+    tmp = migrate_expr_back(tmp_expr);
 
-    // We add a subtype to the symbol we dereferenced,
-    // Since symbol is not static_lifetime, we will mark
-    // it as "dereferenced_symbol" for now to pass the filter
-    tmp.type().subtype() = typet("dereferenced_symbol");
-
-    read_write_rec(tmp, r, w, suffix, guard);
+    // Since symbol is not static_lifetime, we need mark it
+    read_write_rec(tmp, r, w, suffix, guard, true);
   }
   else if(expr.is_address_of() || expr.id() == "implicit_address_of")
   {

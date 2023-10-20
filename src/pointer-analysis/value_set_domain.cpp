@@ -6,8 +6,7 @@
 void value_set_domaint::transform(
   const namespacet &ns,
   locationt from_l,
-  locationt to_l,
-  const std::vector<expr2tc> &arguments)
+  locationt to_l)
 {
   switch(from_l->type)
   {
@@ -32,8 +31,10 @@ void value_set_domaint::transform(
 
   case FUNCTION_CALL:
   {
+    const code_function_call2t &code = to_code_function_call2t(from_l->code);
     const symbolt &symbol = *ns.lookup(to_l->function);
 
+    const std::vector<expr2tc> &arguments = code.operands;
     value_set->do_function_call(symbol, arguments);
   }
   break;

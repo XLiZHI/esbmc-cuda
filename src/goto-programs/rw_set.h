@@ -13,7 +13,7 @@ public:
   struct entryt
   {
     irep_idt object;
-    bool r, w;
+    bool r, w, dereferenced;
     exprt guard;
 
     entryt() : r(false), w(false), guard(true_exprt())
@@ -84,7 +84,8 @@ protected:
     bool r,
     bool w,
     const std::string &suffix,
-    const guardt &guard);
+    const guardt &guard,
+    bool dereferenced = false);
 };
 
 #define forall_rw_set_entries(it, rw_set)                                      \

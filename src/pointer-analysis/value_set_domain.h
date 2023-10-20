@@ -49,11 +49,8 @@ public:
     value_set->location_number = l->location_number;
   }
 
-  void transform(
-    const namespacet &ns,
-    locationt from_l,
-    locationt to_l,
-    const std::vector<expr2tc> &arguments = {}) override;
+  void
+  transform(const namespacet &ns, locationt from_l, locationt to_l) override;
 
   void get_reference_set(
     const namespacet &ns [[maybe_unused]],

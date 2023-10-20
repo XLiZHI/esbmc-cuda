@@ -457,6 +457,8 @@ protected:
     const code_function_call2t &func_call,
     reachability_treet &art);
 
+  void intrinsic_races_check_dereference(expr2tc &expr, bool assign);
+
   /** Walk back up stack frame looking for exception handler. */
   bool symex_throw();
 
@@ -777,6 +779,7 @@ protected:
 
   // Members
 
+  std::unordered_map<std::string, exprt, irep_id_hash> deref_map;
   /** Options we're working with */
   optionst &options;
   /**
