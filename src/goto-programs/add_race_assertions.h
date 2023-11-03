@@ -15,4 +15,19 @@ void add_race_assertions(
   contextt &context,
   goto_functionst &goto_functions);
 
+// for Standard and CUDA library. (A special case: "exception" library's file name is "")
+static const std::unordered_set<std::string> ignored_library = {
+  "pthread_lib.c",
+  "builtin_libs.c",
+  "stdlib.c",
+  "string.c",
+  "io.c",
+  "",
+  "cuda_runtime_api.h",
+  "call_kernel.h",
+  "device_launch_parameters.h",
+  "sm_atomic_functions.h",
+  "vector_types.h",
+  "driver_types.h"};
+
 #endif

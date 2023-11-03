@@ -90,6 +90,13 @@ void add_race_assertions(
   {
     goto_programt::instructiont &instruction = *i_it;
 
+    std::string file_name = instruction.location.file().as_string();
+
+    // We don't have to process every instruction, and filtering out some libraries by
+    // filename avoids creating unnecessary symbols, which makes it more efficient.
+    if(ignored_library.find(file_name) != ignored_library.end())
+      continue;
+
     if(instruction.is_assign())
     {
       exprt tmp_expr = migrate_expr_back(instruction.code);
@@ -181,7 +188,8 @@ void add_race_assertions(
   w_guardst w_guards(context);
 
   Forall_goto_functions(f_it, goto_functions)
-    add_race_assertions(value_sets, context, f_it->second.body, w_guards);
+    if(f_it->first != goto_functions.main_id())
+      add_race_assertions(value_sets, context, f_it->second.body, w_guards);
 
   // get "main"
   goto_functionst::function_mapt::iterator m_it =
