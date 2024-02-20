@@ -601,7 +601,8 @@ bool clang_c_convertert::get_var(const clang::VarDecl &vd, exprt &new_expr)
       if (get_expr(*vd.getInit(), val))
         return true;
 
-      gen_typecast(ns, val, t);
+      if (!is_reference(t) && val.statement() != "function_call")
+        gen_typecast(ns, val, t);
 
       added_symbol->value = val;
       decl.operands().push_back(val);

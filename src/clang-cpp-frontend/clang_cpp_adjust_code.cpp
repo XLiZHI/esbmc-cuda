@@ -155,7 +155,6 @@ void clang_cpp_adjust::adjust_decl_block(codet &code)
     if (code_decl.operands().size() == 2)
     {
       exprt &rhs = code_decl.rhs();
-      exprt &lhs = code_decl.lhs();
       if (
         rhs.id() == "sideeffect" && rhs.statement() == "function_call" &&
         rhs.get_bool("constructor"))
@@ -185,15 +184,6 @@ void clang_cpp_adjust::adjust_decl_block(codet &code)
         new_block.copy_to_operands(init);
 
         continue;
-      }
-
-      if (lhs.type().get_bool("#reference"))
-      {
-        // adjust rhs to address_off:
-        // `int &r = g;` is turned into `int &r = &g;`
-        exprt result_expr = exprt("address_of", rhs.type());
-        result_expr.copy_to_operands(rhs.op0());
-        rhs.swap(result_expr);
       }
     }
 
