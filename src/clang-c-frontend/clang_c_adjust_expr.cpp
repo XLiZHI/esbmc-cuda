@@ -252,6 +252,16 @@ void clang_c_adjust::adjust_member(member_exprt &expr)
     deref.type() = base.type().subtype();
     deref.move_to_operands(base);
     base.swap(deref);
+
+    if (is_array_like(expr.type()))
+    {
+      index_exprt index;
+      index.array() = expr;
+      index.index() = gen_zero(index_type());
+      index.type() = expr.type().subtype();
+      index.location() = expr.location();
+      expr.swap(index);
+  }
   }
 }
 
