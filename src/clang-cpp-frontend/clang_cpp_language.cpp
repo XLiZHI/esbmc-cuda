@@ -36,7 +36,7 @@ void clang_cpp_languaget::force_file_type()
     }
   }
 
-  std::string clangstd = cppstd.empty() ? "-std=c++03" : "-std=c++" + cppstd;
+  std::string clangstd = cppstd.empty() ? "-std=c++11" : "-std=c++" + cppstd;
   compiler_args.push_back(clangstd);
 
   if (
