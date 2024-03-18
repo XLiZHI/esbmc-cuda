@@ -3408,6 +3408,7 @@ void clang_c_convertert::get_decl_name(
     return;
   }
 
+  case clang::Decl::CXXConstructor:
   case clang::Decl::Var:
     if (name.empty())
     {
