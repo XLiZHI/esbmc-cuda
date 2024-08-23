@@ -26,7 +26,7 @@ public:
       // Do we care about overlaps?
       result ^= hash[i];
     return result;
-  } 
+  }
 #else
   size_t to_size_t() const
   {
