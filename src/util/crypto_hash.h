@@ -10,10 +10,24 @@ class crypto_hash
 {
 public:
   std::shared_ptr<crypto_hash_private> p_crypto;
+#if BOOST_VERSION >= 108600
+  unsigned char hash[20];
+#else
   unsigned int hash[5];
+#endif
 
   bool operator<(const crypto_hash &h2) const;
 
+#if BOOST_VERSION >= 108600
+  size_t to_size_t() const
+  {
+    size_t result = hash[0];
+    for (int i = 1; i < 20; i++)
+      // Do we care about overlaps?
+      result ^= hash[i];
+    return result;
+  } 
+#else
   size_t to_size_t() const
   {
     size_t result = hash[0];
@@ -22,6 +36,7 @@ public:
       result ^= hash[i];
     return result;
   }
+#endif
 
   std::string to_string() const;
 
