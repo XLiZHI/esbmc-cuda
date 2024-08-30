@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <cheri/cheric.h>
+#include <cassert>
 
 int nondet_int();
 
@@ -11,25 +12,29 @@ class t2
 public:
   int a[5];
 
-  t2() : a{0,1,2,3,4}
+  t2() : a{0, 1, 2, 3, 4}
   {
   }
 
   int bar();
 };
 
-void* foo(void *a) {
+void *foo(void *a)
+{
   return ((void *)((intptr_t)a & (intptr_t)~1));
 }
 
-int bar() {
+int t2::bar()
+{
   int a = nondet_int() % 10;
-  int *__capability cap_ptr = cheri_ptr(&a, sizeof(a));
+  int *__capability cap_ptr =
+    static_cast<char *__capability>(cheri_ptr(&a, sizeof(a)));
   assert(*cap_ptr < 9);
   return 0;
 }
 
-int main() {
+int main()
+{
   t2 t;
   assert(t.a[0] == 0);
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <cheri/cheric.h>
+#include <cassert>
 
 char *buffer = "hello";
 char *secret = "secret";
@@ -19,7 +20,10 @@ public:
   {
   }
 
-  ~t2() { ii = 0; }
+  ~t2()
+  {
+    ii = 0;
+  }
 
   int foo();
 };
@@ -27,7 +31,8 @@ public:
 int t2::foo()
 {
   // zero-length capability is allowed
-  char *__capability cap_ptr = cheri_ptr(buffer, 3);
+  char *__capability cap_ptr =
+    static_cast<char *__capability>(cheri_ptr(buffer, 3));
   assert(cap_ptr[2] == 'l');
   return 0;
 }

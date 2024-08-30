@@ -79,6 +79,7 @@ endif()
 if(ESBMC_CHERI_CLANG)
     set(REGRESSIONS_CHERI cheri-c
                           cheri-128
+                          cheri-cpp
        )
 endif()
 

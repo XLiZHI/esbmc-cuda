@@ -3,10 +3,12 @@
 
 #include <stdint.h>
 #include <cheri/cheric.h>
+#include <cassert>
 
 int nondet_int();
 
-void* foo(void *a) {
+void *foo(void *a)
+{
   return ((void *)((intptr_t)a & (intptr_t)~1));
 }
 
@@ -22,15 +24,17 @@ public:
   int bar();
 };
 
-
-int t2::bar() {
+int t2::bar()
+{
   int a = nondet_int() % 10;
-  int *__capability cap_ptr = cheri_ptr(&a, sizeof(a));
+  int *__capability cap_ptr =
+    static_cast<int *__capability>(cheri_ptr(&a, sizeof(a)));
   assert(*cap_ptr >= 10 || *cap_ptr < 10);
   return 0;
 }
 
-int main() {
+int main()
+{
   t2 instance2;
   assert(instance2.i == 2);
 
