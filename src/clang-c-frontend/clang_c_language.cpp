@@ -448,15 +448,15 @@ void __ESBMC_unreachable();
   if (config.ansi_c.cheri)
   {
     intrinsics += R"(
-__SIZE_TYPE__ __esbmc_cheri_length_get(void *__capability);
+__SIZE_TYPE__ __esbmc_cheri_length_get(const void *__capability);
 void *__capability __esbmc_cheri_bounds_set(void *__capability, __SIZE_TYPE__);
-__SIZE_TYPE__ __esbmc_cheri_base_get(void *__capability);
+__SIZE_TYPE__ __esbmc_cheri_base_get(const void *__capability);
 #if __ESBMC_CHERI__ == 128
-__UINT64_TYPE__ __esbmc_cheri_top_get(void *__capability);
-__SIZE_TYPE__ __esbmc_cheri_perms_get(void *__capability);
-__UINT16_TYPE__ __esbmc_cheri_flags_get(void *__capability);
-__UINT32_TYPE__ __esbmc_cheri_type_get(void *__capability);
-_Bool __esbmc_cheri_sealed_get(void *__capability);
+__UINT64_TYPE__ __esbmc_cheri_top_get(const void *__capability);
+__SIZE_TYPE__ __esbmc_cheri_perms_get(const void *__capability);
+__UINT16_TYPE__ __esbmc_cheri_flags_get(const void *__capability);
+__UINT32_TYPE__ __esbmc_cheri_type_get(const void *__capability);
+_Bool __esbmc_cheri_sealed_get(const void *__capability);
 #endif
 __UINT64_TYPE__ __esbmc_clzll(__UINT64_TYPE__);
     )";

@@ -47,7 +47,7 @@ union __esbmc_cheri_cap128
   };
 };
 
-__SIZE_TYPE__ __esbmc_cheri_base_get(void *__capability cap)
+__SIZE_TYPE__ __esbmc_cheri_base_get(const void *__capability cap)
 {
   union __esbmc_cheri_cap128 u = {cap};
   cc128_cap_t comp;
@@ -56,7 +56,7 @@ __SIZE_TYPE__ __esbmc_cheri_base_get(void *__capability cap)
   return comp.cr_base;
 }
 
-__SIZE_TYPE__ __esbmc_cheri_perms_get(void *__capability cap)
+__SIZE_TYPE__ __esbmc_cheri_perms_get(const void *__capability cap)
 {
   union __esbmc_cheri_cap128 u = {cap};
   cc128_cap_t comp;
@@ -67,7 +67,7 @@ __SIZE_TYPE__ __esbmc_cheri_perms_get(void *__capability cap)
   return hwperms | swperms << CC128_UPERMS_SHFT;
 }
 
-__UINT16_TYPE__ __esbmc_cheri_flags_get(void *__capability cap)
+__UINT16_TYPE__ __esbmc_cheri_flags_get(const void *__capability cap)
 {
   union __esbmc_cheri_cap128 u = {cap};
   cc128_cap_t comp;
@@ -75,7 +75,7 @@ __UINT16_TYPE__ __esbmc_cheri_flags_get(void *__capability cap)
   return cc128_get_flags(&comp);
 }
 
-__UINT32_TYPE__ __esbmc_cheri_type_get(void *__capability cap)
+__UINT32_TYPE__ __esbmc_cheri_type_get(const void *__capability cap)
 {
   union __esbmc_cheri_cap128 u = {cap};
   cc128_cap_t comp;
@@ -84,7 +84,7 @@ __UINT32_TYPE__ __esbmc_cheri_type_get(void *__capability cap)
   return cc128_get_otype(&comp);
 }
 
-_Bool __esbmc_cheri_sealed_get(void *__capability cap)
+_Bool __esbmc_cheri_sealed_get(const void *__capability cap)
 {
   union __esbmc_cheri_cap128 u = {cap};
   cc128_cap_t comp;
@@ -135,7 +135,7 @@ __esbmc_cheri_bounds_set(void *__capability cap, __SIZE_TYPE__ sz)
         (union __esbmc_cheri_cap128){.cursor = (uintptr_t)(ptr)}.cap, len)
 #  endif
 
-__SIZE_TYPE__ __esbmc_cheri_length_get(void *__capability cap)
+__SIZE_TYPE__ __esbmc_cheri_length_get(const void *__capability cap)
 {
 #  if 1
   union __esbmc_cheri_cap128 u = {cap};
