@@ -1,9 +1,24 @@
+#include <boost/program_options/parsers.hpp>
 #include <cassert>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <optional>
 #include <sstream>
 
+#include <stdexcept>
+#include <string>
 #include <util/cmdline.h>
 #include <util/message.h>
+#include <util/config_file.h>
+
+#ifdef WIN32
+#  define HOME_ENV_NAME "USERPROFILE"
+#  define DEFAULT_CONFIG_PATH "%userprofile%\\esbmc.toml"
+#else
+#  define HOME_ENV_NAME "HOME"
+#  define DEFAULT_CONFIG_PATH "~/.config/esbmc.toml"
+#endif
 
 /* Parses 's' according to a simple interpretation of shell rules, taking only
  * whitespace and the characters ', " and \ into account. */
@@ -145,6 +160,47 @@ const char *cmdlinet::getval(const char *option) const
   return value->second.front().c_str();
 }
 
+std::string cmdlinet::expand_user(std::string const path) const
+{
+  std::string result = std::string(path);
+
+  // Case ~
+  const std::optional<std::string> home_path = std::getenv(HOME_ENV_NAME);
+  if (!result.empty() && result[0] == '~' && home_path)
+    result.replace(0, 1, home_path.value());
+
+  return std::filesystem::absolute(result).string();
+}
+
+// Returns the config file path if it is located, if config files should not be
+// loaded returns a std::nullopt. If a wrong file location is specified, then an
+// empty string is returned
+std::optional<std::string> cmdlinet::get_config_file_location() const
+{
+  const auto envloc = std::getenv("ESBMC_CONFIG_FILE");
+  if (envloc)
+  {
+    // Disabled Case: Check if empty string, in which case we don't return anything.
+    const std::string envloc_str = std::string(envloc);
+    if (envloc_str.empty())
+      return std::nullopt;
+
+    // Load the config file
+    const std::string config_path = this->expand_user(envloc_str);
+    if (std::filesystem::exists(config_path))
+      return config_path;
+
+    // Wrong file returned.
+    return "";
+  }
+  // Load default config file if it exists.
+  const std::string config_path = this->expand_user(DEFAULT_CONFIG_PATH);
+  if (std::filesystem::exists(config_path))
+    return config_path;
+
+  return std::nullopt;
+}
+
 bool cmdlinet::parse(
   int argc,
   const char **argv,
@@ -195,12 +251,43 @@ bool cmdlinet::parse(
   p.add("input-file", -1);
   try
   {
+    // Load env
     boost::program_options::store(
       boost::program_options::command_line_parser(
         simple_shell_unescape(getenv("ESBMC_OPTS"), "ESBMC_OPTS"))
         .options(all_cmdline_options)
         .run(),
       vm);
+
+    // Config file: Check if config file should be loaded, and get location.
+    std::optional<std::string> config_path = this->get_config_file_location();
+
+    // Load config file
+    if (config_path)
+    {
+      // Check if config path provided is invalid.
+      if (config_path->compare("") == 0)
+      {
+        const auto envloc = std::getenv("ESBMC_CONFIG_FILE");
+        log_error("Config: File not found: {}", envloc);
+        return true;
+      }
+
+      // Read config file.
+      std::ifstream file(config_path.value());
+      // File path provided is invalid.
+      if (!file)
+      {
+        log_error("Error while reading config file: {}", config_path.value());
+        return true;
+      }
+
+      // Load config file
+      boost::program_options::store(
+        parse_toml_file(file, all_cmdline_options), vm);
+    }
+
+    // Load commandline parameters
     boost::program_options::store(
       boost::program_options::command_line_parser(argc, argv)
         .options(all_cmdline_options)
