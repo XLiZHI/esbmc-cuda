@@ -191,6 +191,9 @@ protected:
   void annotate_ctor_dtor_rtn_type(
     const clang::CXXMethodDecl &cxxmdd,
     typet &rtn_type);
+  void annotate_operator_rtn_type(
+    const clang::CXXMethodDecl &cxxmdd,
+    typet &rtn_type);
   bool is_copy_or_move_ctor(const clang::DeclContext &dcxt);
   bool is_defaulted_ctor(const clang::CXXMethodDecl &md);
 

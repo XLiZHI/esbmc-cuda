@@ -670,6 +670,8 @@ void goto_convertt::convert_decl(const codet &code, goto_programt &dest)
   if (is_vla)
     generate_dynamic_size_vla(var, new_code.location(), dest);
 
+  const symbol_exprt symbol_expr(s->id, s->type);
+
   if (!initializer.is_nil())
   {
     goto_programt sideeffects;
@@ -677,15 +679,26 @@ void goto_convertt::convert_decl(const codet &code, goto_programt &dest)
     remove_sideeffects(initializer, sideeffects);
     dest.destructive_append(sideeffects);
 
-    code_assignt assign(var, initializer);
-    assign.location() = new_code.location();
-    copy(assign, ASSIGN, dest);
+    code_function_callt op;
+    if (get_destructor("move_assignment", ns, s->type, op))
+    {
+      address_of_exprt this_expr(var);
+      op.arguments().push_back(this_expr);
+      op.arguments().push_back(address_of_exprt(initializer));
+
+      copy(op, FUNCTION_CALL, dest);
+    }
+    else
+    {
+      code_assignt assign(var, initializer);
+      assign.location() = new_code.location();
+      copy(assign, ASSIGN, dest);
+    }
   }
 
   // now create a 'dead' instruction -- will be added after the
   // destructor created below as unwind_destructor_stack pops off the
   // top of the destructor stack
-  const symbol_exprt symbol_expr(s->id, s->type);
 
   {
     code_deadt code_dead(symbol_expr);
@@ -694,7 +707,7 @@ void goto_convertt::convert_decl(const codet &code, goto_programt &dest)
 
   // do destructor
   code_function_callt destructor;
-  if (get_destructor(ns, s->type, destructor))
+  if (get_destructor("destructor", ns, s->type, destructor))
   {
     // add "this"
     address_of_exprt this_expr(symbol_expr);

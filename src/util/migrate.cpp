@@ -294,6 +294,13 @@ static type2tc migrate_type0(const typet &type)
     return get_empty_type();
   }
 
+  if (type.id() == "move_assignment" || type.id() == "copy_assignment")
+  {
+    // New operator returns something; operator is a void method on an
+    // existing object.
+    return get_empty_type();
+  }
+
   if (type.id() == "incomplete_array")
   {
     // Hurrr. Mark as being infinite in size.

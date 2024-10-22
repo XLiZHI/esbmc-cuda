@@ -1884,6 +1884,9 @@ bool clang_cpp_convertert::annotate_class_method(
     }
   }
 
+  if (is_CopyOrMoveOperator(cxxmdd))
+    annotate_operator_rtn_type(cxxmdd, component_type.return_type());
+
   // annotate name
   std::string method_id, method_name;
   get_decl_name(cxxmdd, method_name, method_id);
@@ -2123,6 +2126,17 @@ void clang_cpp_convertert::annotate_ctor_dtor_rtn_type(
   std::string mark_rtn = (cxxmdd.getKind() == clang::Decl::CXXDestructor)
                            ? "destructor"
                            : "constructor";
+  typet tmp_rtn_type(mark_rtn);
+  rtn_type = tmp_rtn_type;
+}
+
+void clang_cpp_convertert::annotate_operator_rtn_type(
+  const clang::CXXMethodDecl &cxxmdd,
+  typet &rtn_type)
+{
+  std::string mark_rtn = cxxmdd.isMoveAssignmentOperator()
+                           ? "move_assignment"
+                           : "copy_assignment";
   typet tmp_rtn_type(mark_rtn);
   rtn_type = tmp_rtn_type;
 }

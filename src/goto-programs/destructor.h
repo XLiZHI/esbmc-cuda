@@ -5,6 +5,7 @@
 #include <util/std_code.h>
 
 bool get_destructor(
+  const std::string &method,
   const namespacet &ns,
   const typet &type,
   code_function_callt &destructor);
